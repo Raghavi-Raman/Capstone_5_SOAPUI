@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="b1355dd2-d9c9-4a1f-b21c-5f5399c49c52" activeEnvironment="Default" name="Capstone_SOAPUI" soapui-version="5.7.2" abortOnError="false" runType="SEQUENTIAL" resourceRoot="" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:RestService" id="69244b0f-20f3-4566-80b3-b43829afae27" wadlVersion="http://wadl.dev.java.net/2009/02" name="https://restcountries.com" type="rest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart=""/><con:endpoints><con:endpoint>https://restcountries.com</con:endpoint></con:endpoints><con:resource name="Northern Europe" path="/v3.1/subregion/Northern Europe" id="9f34e527-da4f-4f45-add6-cd7332817dbf"><con:settings/><con:parameters/><con:method name="Northern Europe 1" id="71e08cc0-ba3d-4154-9c03-5afeeb44ef11" method="GET"><con:settings/><con:parameters/><con:representation type="RESPONSE"><con:mediaType>text/html</con:mediaType><con:status>200</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>application/json</con:mediaType><con:params/></con:representation><con:request name="Request 1" id="62d00cb7-a1d4-4f92-b575-53a2e8599a85" mediaType="application/json"><con:settings/><con:endpoint>https://restcountries.com</con:endpoint><con:request/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource></con:interface><con:testSuite id="d1070e50-d82a-4387-8665-4b7520aa5cf3" name="TestSuite"><con:description>TestSuite generated for REST Service [https://restcountries.com]</con:description><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="f5186c8b-228d-489a-93bf-26eb532b4f03" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Get_Region" searchProperties="true"><con:description>TestCase generated for REST Resource [Northern Europe] located at [/v3.1/subregion/Northern Europe]</con:description><con:settings/><con:testStep type="httprequest" name="GetRegion" id="a664cbb7-6126-44b2-988d-b08cb7544a86"><con:settings/><con:config method="GET" xsi:type="con:HttpRequest" id="54392185-9a83-4d3f-95ad-74ae3c224562" name="GetRegion" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>https://restcountries.com/v3.1/subregion/Northern Europe</con:endpoint><con:request/><con:assertion type="GroovyScriptAssertion" id="98b0b4a3-2123-40c0-bb6e-0c1218fdd782" name="Script Assertion"><con:configuration><scriptText>import groovy.json.JsonSlurper
+
+def response= messageExchange.response.responseContent
+def parsejson = new groovy.json.JsonSlurper().parseText(response)
+
+def expected_region= context.getTestCase().getPropertyValue("region")
+def expected_subregion= context.getTestCase().getPropertyValue("subregion")
+def expected_common= context.getTestCase().getPropertyValue("common")
+
+def region=parsejson.any
+{it.region=="Europe"}
+assert region,"Europe is found in the region list"
+log.info ("Successfully validated region: " + expected_region)
+
+def subregion=parsejson.any
+{it.subregion=="Northern Europe"}
+assert subregion, "Northern Europe is found in the subregion list"
+log.info ("Successfully validated subregion: " + expected_subregion)
+
+def common=parsejson.any
+{it.name.common=="Lithuania"}
+assert common, "Lithuania is found in the common list"
+log.info ("Successfully validated common: " + expected_common)</scriptText></con:configuration></con:assertion><con:assertion type="JsonPath Existence Match" id="ec140931-4c70-4fc4-b2c4-99b684f5ee61" name="JsonPath Existence Match"><con:configuration><path>$.[*].name.common</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="JsonPath Count" id="b893650c-ed32-4ddf-a01e-e89f1e581908" name="JsonPath Count"><con:configuration><path>$.[*]</path><content>16</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="JsonPath Match" id="8fb45562-c7e2-4a21-b804-45d3fadf99d0" name="JsonPath Match"><con:configuration><path>$.*.name.common</path><content>[Lithuania, Iceland, Denmark, United Kingdom, Guernsey, Estonia, Latvia, Jersey, Sweden, Finland, Ireland, Svalbard and Jan Mayen, Isle of Man, Norway, Faroe Islands, Ã…land Islands]</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="JsonPath RegEx Match" id="6b1a8278-8213-413c-9c36-40e71e9a40d8" name="JsonPath RegEx Match"><con:configuration><path>$.[*].nativeName.common</path><content>false</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments><regEx>[A-Za-z]*</regEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:config></con:testStep><con:testStep type="groovy" name="ReadExcel" id="be8e6f0b-13ef-4ee7-aa0e-cd9106c781de"><con:settings/><con:config><script>import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.apache.poi.ss.usermodel.*
+import java.io.FileInputStream
+ 
+def readExcel(filePath, sheetName){
+	FileInputStream input = new FileInputStream(new File(filePath))
+	Workbook workbook = new XSSFWorkbook(input)
+	Sheet sheet = workbook.getSheet(sheetName)
+	List&lt;Map&lt;String, String>> data =[]
+	Row headerRow = sheet.getRow(0)
+	for (int i=1;i&lt;=sheet.getLastRowNum();i++){
+	Row row = sheet.getRow(i)
+	Map&lt;String,String>rowData=[:]
+	for (int j=0;j&lt;row.getLastCellNum();j++){
+		rowData.put(headerRow.getCell(j).getStringCellValue(), row.getCell(j).getStringCellValue())
+	}
+	data.add(rowData)
+	}
+	workbook.close()
+	input.close()
+	return data
+}
+ 
+	def filePath= "C:/Users/Z00530863/Music/Soapui.xlsx"
+	def sheetName ="ReadExcel"
+	def data = readExcel(filePath, sheetName)
+	log.info "Excel Data:"+ data
+	return data</script></con:config></con:testStep><con:properties><con:property><con:name>common</con:name><con:value>Lithuania</con:value></con:property><con:property><con:name>region</con:name><con:value>Europe</con:value></con:property><con:property><con:name>subregion</con:name><con:value>Northern Europe</con:value></con:property></con:properties></con:testCase><con:properties/></con:testSuite><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>
